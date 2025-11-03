@@ -30,7 +30,9 @@ http://127.0.0.1:5000/
 # Future Enhancements🚀
 
 💡Add user login system
+
 💡Include data export (Excel/CSV)
+
 💡Integrate ML-based spending predictions
 
 # Author👨‍💻
@@ -38,3 +40,4 @@ http://127.0.0.1:5000/
 Developed by **Piyush Maurya**  
 🔗 [GitHub Profile](https://github.com/Er-PiyushMaurya) |
 🔗[LinkedIn](https://www.linkedin.com/in/piyush-kumar-34a1b0247).
+
