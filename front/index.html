@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Login - Expense Management</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+  body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    height: 100vh;
+    background: url('https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .login-container {
+    padding: 30px 40px;
+    border-radius: 12px;
+    width: 350px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    color: white;
+    background: rgba(0,0,0,0.6);
+    text-align: center;
+  }
+
+  h2 {
+    margin-top: 0;
+    font-weight: 500;
+  }
+
+  button {
+    width: 100%;
+    padding: 12px 0;
+    margin: 12px 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+  }
+
+  button.admin { background-color: #007bff; color: white; }
+  button.admin:hover { background-color: #0056b3; }
+  button.manager { background-color: #dc3545; color: white; }
+  button.manager:hover { background-color: #a71d2a; }
+  button.employee { background-color: #28a745; color: white; }
+  button.employee:hover { background-color: #1c7430; }
+</style>
+</head>
+<body>
+
+<div class="login-container">
+  <h2>Login to Expense Management</h2>
+  <button class="admin" onclick="login('Admin')">Login as Admin</button>
+  <button class="manager" onclick="login('Manager')">Login as Manager</button>
+  <button class="employee" onclick="login('Employee')">Login as Employee</button>
+</div>
+
+<script>
+  function login(role) {
+    // Save role in localStorage
+    localStorage.setItem('role', role);
+    // Redirect to dashboard page
+    window.location.href = 'dashboard.html';
+  }
+</script>
+
+</body>
+</html>

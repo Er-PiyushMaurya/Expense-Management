@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dashboard - Expense Management</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+  body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px;
+    background: #f0f2f5;
+    color: #333;
+  }
+
+  .app-container {
+    padding: 30px 40px;
+    border-radius: 12px;
+    width: 400px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  h2 {
+    margin-top: 0;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  button {
+    width: 100%;
+    padding: 12px 0;
+    margin: 12px 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+  }
+
+  .logout-btn { background-color: #6c757d; color: white; }
+  .logout-btn:hover { background-color: #495057; }
+  button.admin { background-color: #007bff; color: white; }
+  button.admin:hover { background-color: #0056b3; }
+  button.manager { background-color: #dc3545; color: white; }
+  button.manager:hover { background-color: #a71d2a; }
+  button.employee { background-color: #28a745; color: white; }
+  button.employee:hover { background-color: #1c7430; }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 10px 12px;
+    margin: 10px 0 20px 0;
+    border-radius: 6px;
+    border: 1.5px solid #ced4da;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+
+  ul {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  li {
+    background: #f8f9fa;
+    margin: 10px 0;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+
+  textarea { resize: vertical; min-height: 50px; font-size: 1rem; }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <button class="logout-btn" onclick="logout()">Logout</button>
+  <h2>Expense Management - <span id="roleDisplay"></span> View</h2>
+
+  <div id="adminView" style="display:none;">
+    <p><em>Admin dashboard features (user/role management) can be added here.</em></p>
+  </div>
+
+  <div id="employeeView" style="display:none;">
+    <h3>Submit Expense</h3>
+    <input type="number" id="amount" placeholder="Amount" />
+    <select id="currency">
+      <option value="USD">USD</option>
+      <option value="INR">INR</option>
+    </select>
+    <input type="text" id="category" placeholder="Category" />
+    <input type="text" id="description" placeholder="Description" />
+    <input type="date" id="date" />
+    <button onclick="submitExpense()">Submit</button>
+
+    <h3>My Expenses</h3>
+    <ul id="expenseList"></ul>
+  </div>
+
+  <div id="managerView" style="display:none;">
+    <h3>Expenses to Approve</h3>
+    <ul id="approvalList"></ul>
+  </div>
+</div>
+
+<script>
+  let currentUserRole = localStorage.getItem('role') || '';
+  if(!currentUserRole) window.location.href = 'index.html';
+
+  document.getElementById('roleDisplay').innerText = currentUserRole;
+  document.getElementById('adminView').style.display = currentUserRole === 'Admin' ? 'block' : 'none';
+  document.getElementById('employeeView').style.display = currentUserRole === 'Employee' ? 'block' : 'none';
+  document.getElementById('managerView').style.display = currentUserRole === 'Manager' ? 'block' : 'none';
+
+  let expenses = [
+    {id: 1, employee: 'employee', amount: 100, currency: 'USD', category: 'Travel', description: 'Taxi ride', date: '2025-10-01', status: 'Pending', comments: ''}
+  ];
+
+  function logout() {
+    localStorage.removeItem('role');
+    window.location.href = 'index.html';
+  }
+
+  function submitExpense() {
+    const amount = document.getElementById('amount').value;
+    const currency = document.getElementById('currency').value;
+    const category = document.getElementById('category').value.trim();
+    const description = document.getElementById('description').value.trim();
+    const date = document.getElementById('date').value;
+
+    if (!amount || !category || !date) { alert('Amount, Category, and Date are required!'); return; }
+
+    expenses.push({id: expenses.length + 1, employee: 'employee', amount: Number(amount), currency, category, description, date, status: 'Pending', comments: ''});
+    alert('Expense submitted!');
+    document.getElementById('amount').value = '';
+    document.getElementById('currency').value = 'USD';
+    document.getElementById('category').value = '';
+    document.getElementById('description').value = '';
+    document.getElementById('date').value = '';
+    renderExpenses();
+  }
+
+  function renderExpenses() {
+    if (currentUserRole === 'Employee') {
+      const ul = document.getElementById('expenseList');
+      ul.innerHTML = '';
+      expenses.filter(e => e.employee === 'employee').forEach(exp => {
+        const li = document.createElement('li');
+        li.textContent = `${exp.date} - ${exp.category} - ${exp.amount} ${exp.currency} - ${exp.status}` + (exp.comments ? ` (Comments: ${exp.comments})` : '');
+        ul.appendChild(li);
+      });
+    }
+
+    if (currentUserRole === 'Manager') {
+      const ul = document.getElementById('approvalList');
+      ul.innerHTML = '';
+      expenses.filter(e => e.status === 'Pending').forEach(exp => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <b>${exp.employee}</b> - ${exp.date} - ${exp.category} - ${exp.amount} ${exp.currency}<br/>
+          <textarea id="comment${exp.id}" placeholder="Add comments"></textarea><br/>
+          <button onclick="approveExpense(${exp.id})">Approve</button>
+          <button onclick="rejectExpense(${exp.id})">Reject</button>
+        `;
+        ul.appendChild(li);
+      });
+    }
+  }
+
+  function approveExpense(id) {
+    const commentElem = document.getElementById('comment' + id);
+    updateExpenseStatus(id, 'Approved', commentElem.value.trim());
+  }
+
+  function rejectExpense(id) {
+    const commentElem = document.getElementById('comment' + id);
+    updateExpenseStatus(id, 'Rejected', commentElem.value.trim());
+  }
+
+  function updateExpenseStatus(id, status, comments) {
+    expenses = expenses.map(e => e.id === id ? {...e, status, comments} : e);
+    alert(`Expense ${status.toLowerCase()}!`);
+    renderExpenses();
+  }
+
+  renderExpenses();
+</script>
+
+</body>
+</html>
